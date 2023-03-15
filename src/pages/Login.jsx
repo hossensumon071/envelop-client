@@ -1,50 +1,53 @@
 import React, { useState } from "react";
-import Button from "../components/Button";
-import FromControl from "../components/FromControl";
+import FormControl from "../components/FormControl";
 import SectionTitle from "../components/SectionTitle";
+import Button from "../components/Button";
+import { useLogin } from "../hooks/useLogin";
+import ErrorMessage from "../components/ErrorMessage";
 
 const Login = () => {
-  const [fromFields, setFromFields] = useState({
+  const [formFields, setFormFeilds] = useState({
     email: "",
     password: "",
   });
 
-  const handleLogin = (e) => {
+  const { login, isLoading, error } = useLogin();
+
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    console.log(fromFields);
-
-    // clear state
-    setFromFields({
-      email: "",
-      password: "",
-    });
+    await login(formFields.email, formFields.password);
   };
+
   return (
-    <div className="login flex flex-col justify-center items-center mt-20">
-      <form onSubmit={handleLogin} className="flex flex-col gap-5 ">
+    <div className="login flex flex-col justify-center items-center mt-20 ">
+      <form onSubmit={handleLogin} className="flex flex-col gap-5 w-[25rem]">
         <SectionTitle title={"Login..."} />
-        <FromControl
+
+        <FormControl
           label="email"
           labelInner="Email Address"
           inputType="email"
-          placeholder="write your email"
-          fromFields={fromFields}
-          setFromFields={setFromFields}
+          placeholder="Write your email"
+          formFields={formFields}
+          setFormFeilds={setFormFeilds}
         />
 
-        <FromControl
+        <FormControl
           label="password"
-          labelInner="password"
+          labelInner="Password"
           inputType="password"
-          placeholder="write your password"
-          fromFields={fromFields}
-          setFromFields={setFromFields}
+          placeholder="Write your password"
+          formFields={formFields}
+          setFormFeilds={setFormFeilds}
         />
-        <Button text="Login" submit />
+
+        <Button text={isLoading ? "Logging..." : "Login"} submit />
+
+        {error && <ErrorMessage error={error} />}
       </form>
     </div>
   );
 };
 
-export default Login;
+export default React.memo(Login);

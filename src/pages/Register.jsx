@@ -1,61 +1,63 @@
 import React, { useState } from "react";
-import Button from "../components/Button";
-import FromControl from "../components/FromControl";
+import FormControl from "../components/FormControl";
 import SectionTitle from "../components/SectionTitle";
+import Button from "../components/Button";
+import { useSignup } from "../hooks/useSignup";
+import ErrorMessage from "../components/ErrorMessage";
 
 const Register = () => {
-  const [fromFields, setFromFields] = useState({
+  const [formFields, setFormFeilds] = useState({
     name: "",
     email: "",
     password: "",
   });
 
-  const handleRegister = (e) => {
+  const { signup, isLoading, error } = useSignup();
+
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    console.log(fromFields);
-
-    // clear state
-    setFromFields({
-      name: "",
-      email: "",
-      password: "",
-    });
+    await signup(formFields.name, formFields.email, formFields.password);
   };
+
   return (
-    <div className="register flex flex-col justify-center items-center mt-20">
-      <form onSubmit={handleRegister} className="flex flex-col gap-5 ">
+    <div className="register flex flex-col justify-center items-center mt-20 ">
+      <form onSubmit={handleRegister} className="flex flex-col gap-5 w-[25rem]">
         <SectionTitle title={"Register..."} />
-        <FromControl
+
+        <FormControl
           label="name"
           labelInner="Name"
           inputType="text"
-          placeholder="write your name"
-          fromFields={fromFields}
-          setFromFields={setFromFields}
+          placeholder="Write your name"
+          formFields={formFields}
+          setFormFeilds={setFormFeilds}
         />
 
-        <FromControl
+        <FormControl
           label="email"
           labelInner="Email Address"
           inputType="email"
-          placeholder="write your email"
-          fromFields={fromFields}
-          setFromFields={setFromFields}
+          placeholder="Write your email"
+          formFields={formFields}
+          setFormFeilds={setFormFeilds}
         />
 
-        <FromControl
+        <FormControl
           label="password"
-          labelInner="password"
+          labelInner="Password"
           inputType="password"
-          placeholder="write your password"
-          fromFields={fromFields}
-          setFromFields={setFromFields}
+          placeholder="Write your password"
+          formFields={formFields}
+          setFormFeilds={setFormFeilds}
         />
-        <Button text="Register" submit />
+
+        <Button text={isLoading ? "Registering..." : "Register"} submit />
+
+        {error && <ErrorMessage error={error} />}
       </form>
     </div>
   );
 };
 
-export default Register;
+export default React.memo(Register);
